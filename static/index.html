@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PokéWatch · Pokémon at retail</title>
+  <meta name="description" content="Pokémon TCG release and retail-price tracker.">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+  <script src="./hosting.js" defer></script><script src="./app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./"><img src="./favicon.svg" width="30" height="30" alt="">PokéWatch<span>US EDITION</span></a><span id="tracker-mode" class="local">LOCAL TRACKER</span></header>
+  <main>
+    <section class="heading"><div><p class="eyebrow">THE NEXT DROP, AT THE RIGHT PRICE</p><h1>Keep an eye on retail.</h1><p class="subtitle">Pokémon TCG releases, price checks, and restock alerts.</p></div><div class="actions"><button id="add-watch" class="secondary">Watch a product</button><button id="check">Check now</button></div></section>
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <div class="summary" aria-label="Tracker overview">
+      <div><span class="stat-label">Price matches</span><strong id="matches">—</strong><span>Available at or below a recorded reference</span></div>
+      <div><span class="stat-label">Products discovered</span><strong id="products-count">—</strong><span>From the catalogs being checked</span></div>
+      <div><span class="stat-label">Sources online</span><strong id="sources-count">—</strong><span id="last-check">Waiting for the first check</span></div>
+    </div>
+    <p id="hosting-note" class="note" hidden></p>
+    <div class="workspace">
+      <section class="listings">
+        <div class="section-top"><h2>The watchlist</h2><span id="schedule">Checks every 15 minutes</span></div>
+        <nav class="tabs" aria-label="Watchlist views"><button class="selected" data-view="matches" aria-pressed="true">Price matches</button><button data-view="all" aria-pressed="false">All listings</button><button data-view="unverified" aria-pressed="false">Needs a reference</button><button data-view="releases" aria-pressed="false">Official releases</button></nav>
+        <div class="filters"><label class="search"><span class="sr-only">Search products</span><input type="search" id="search" placeholder="Search a set or product…"></label><label><span class="sr-only">Store</span><select id="store"><option value="">All stores</option></select></label><label class="stock-filter"><input type="checkbox" id="stock">Available only</label></div>
+        <p id="view-note" class="note">Prices are for the product only, before shipping and tax. Availability can change before checkout.</p>
+        <div id="results" aria-live="polite"><div class="empty"><h3>Connecting to your sources</h3><p>The first scan takes about a minute. Live results will appear here.</p></div></div>
+        <button id="more" class="secondary more" hidden>Show more</button>
+      </section>
+      <aside>
+        <section class="side-panel"><div class="section-top"><h2>Source health</h2><span id="scan-state" class="badge">Starting</span></div><div id="sources"></div><p class="small">Catalog coverage is limited. A blocked store is shown as unavailable; it is never counted as sold out.</p></section>
+        <section class="side-panel alerts-panel"><div class="section-top"><h2>Latest alerts</h2><span id="alert-scope" class="tiny-label">LOCAL</span></div><div id="alerts"><p class="small">New releases, price drops, and restocks will appear here.</p></div></section>
+        <section class="reference-note"><span class="tiny-label">WHAT COUNTS AS MSRP?</span><h3>An exact product. A recorded source.</h3><p>MSRP means the manufacturer's suggested retail price. We keep retailer-reported MSRP, official store prices, and your own limits clearly labeled.</p><p>A crossed-out store price alone doesn't count. Products without a reference stay out of price alerts.</p></section>
+      </aside>
+    </div>
+    <footer><span>PokéWatch · Independent personal tracker</span><span id="runtime-note">Keep the bot running and your PC awake for checks and desktop alerts.</span></footer>
+  </main>
+  <dialog id="reference-dialog"><form id="reference-form"><div class="dialog-top"><h2>Set a price reference</h2><button type="button" class="close" aria-label="Close dialog">×</button></div><p id="reference-title"></p><input type="hidden" name="product_id"><label>Reference price (USD)<input name="price" type="number" min="0.01" max="10000" step="0.01" required placeholder="26.94"></label><label>Reference type<select name="kind"><option>Manufacturer MSRP</option><option>Retailer-reported MSRP</option><option>Distributor-reported MSRP</option><option>Official store price</option><option>My price limit</option></select></label><label>Source page for this exact product<input name="url" type="url" required placeholder="https://…"></label><p class="small">Check the edition, pack count, and language. References apply only to this listing; they are never guessed from similar titles.</p><p class="form-error" role="alert"></p><button type="submit">Save reference</button></form></dialog>
+  <dialog id="watch-dialog"><form id="watch-form"><div class="dialog-top"><h2>Watch a product</h2><button type="button" class="close" aria-label="Close dialog">×</button></div><p>Add a US retailer's exact product page. It will be checked for readable price and stock data.</p><label>Product URL<input name="url" type="url" required placeholder="https://…"></label><label>Seller name, if a marketplace<input name="seller" placeholder="For example: Best Buy"></label><p class="small">For Amazon, Walmart, Target, and Best Buy, the page must identify this exact seller. Stores that block automated requests may not be readable. Add a price reference after the first successful check.</p><p class="form-error" role="alert"></p><button type="submit">Add to watchlist</button></form></dialog>
+</body>
+</html>

@@ -1,0 +1,5 @@
+__pycache__/
+data/
+*.log
+_site/
+COMMANDS_AND_RESULTS.md

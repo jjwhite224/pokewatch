@@ -1,0 +1,65 @@
+name: Update and publish PokéWatch
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pokewatch-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Verify price and stock handling
+        run: python -m unittest discover -s tests -v
+      - name: Verify dashboard syntax
+        run: node --check static/app.js
+      - name: Verify hosted and local dashboard behavior
+        run: node --test tests/frontend.test.cjs
+      - name: Restore previous scan
+        uses: actions/cache/restore@v6
+        with:
+          path: data/pages/state.json
+          key: pokewatch-state-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: pokewatch-state-v1-
+      - name: Check public sources and build dashboard
+        run: python build_pages.py --scan
+      - name: Save scan for the next run
+        uses: actions/cache/save@v6
+        with:
+          path: data/pages/state.json
+          key: pokewatch-state-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Upload website files
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

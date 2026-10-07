@@ -1,0 +1,18 @@
+{
+  "country": "US",
+  "currency": "USD",
+  "interval_seconds": 900,
+  "port": 8765,
+  "sources": [
+    {"id": "pokemon", "name": "Pokémon · official releases", "kind": "releases", "url": "https://www.pokemon.com/us/pokemon-tcg/product-gallery"},
+    {"id": "smoke", "name": "Smoke & Mirrors Hobby", "kind": "shopify", "url": "https://www.smokeandmirrorshobby.com/collections/pokemon/products.json?limit=250", "pages": 4},
+    {"id": "gamenerdz", "name": "Game Nerdz", "kind": "storepass", "url": "https://store.storepass.com/saas/search?store_id=OvpVz0pNlL&big_commerce_category_ids=117&product_line=All&q=Pokemon&sort=Recently%20Added&limit=100&page=1&no_track=true", "display_url": "https://www.gamenerdz.com/pokemon", "pages": 3},
+    {"id": "zulus", "name": "Zulu's Games", "kind": "shopify", "url": "https://zulusgames.com/collections/pokemon-2/products.json?limit=250", "pages": 2},
+    {"id": "joshs", "name": "Josh's Cards", "kind": "shopify", "url": "https://joshscards.com/collections/pokemon/products.json?limit=250", "pages": 4},
+    {"id": "walmart", "name": "Walmart", "kind": "walmart", "url": "https://www.walmart.com/cp/trading-cards/9807313"},
+    {"id": "bestbuy", "name": "Best Buy", "kind": "watch", "product_id": "bestbuy:6678359", "url": "https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-bundle/6678359", "seller": "Best Buy"},
+    {"id": "gamestop", "name": "GameStop", "kind": "watch", "product_id": "gamestop:445745", "url": "https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-pitch-black-booster-bundle/445745.html"},
+    {"id": "target", "name": "Target", "kind": "catalog_watch", "url": "https://www.target.com/s/pokemon+trading+card+game", "product_pattern": "/p/", "seller": "Target", "products_per_scan": 8},
+    {"id": "pokemoncenter", "name": "Pokémon Center", "kind": "catalog_watch", "url": "https://www.pokemoncenter.com/category/new-releases", "product_pattern": "/product/", "products_per_scan": 8}
+  ]
+}

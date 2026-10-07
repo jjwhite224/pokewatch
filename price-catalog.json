@@ -1,0 +1,118 @@
+[
+  {
+    "exact_titles": [
+      "Pokemon TCG Mega Evolution Pitch Black Booster Bundle",
+      "Pokemon Mega Evolution Pitch Black Booster Bundle",
+      "Pokemon Pitch Black Booster Bundle",
+      "Pokemon Trading Card Game Mega Evolution Pitch Black Booster Bundle",
+      "Pokemon Trading Card Game Pitch Black Booster Bundle",
+      "Pokemon TCG Pitch Black Booster Bundle"
+    ],
+    "cents": 2694,
+    "kind": "Retailer-reported MSRP",
+    "url": "https://seller.tcgplayer.com/blog/pitch-black-quick-facts",
+    "verified_at": "2026-10-04",
+    "notes": "TCGplayer seller product table explicitly labels this 6-pack product MSRP. Exact titles only; cases and Pokemon Center editions do not match."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG Mega Evolution Pitch Black Elite Trainer Box",
+      "Pokemon Mega Evolution Pitch Black Elite Trainer Box",
+      "Pokemon Pitch Black Elite Trainer Box",
+      "Pokemon TCG Pitch Black Elite Trainer Box"
+    ],
+    "cents": 4999,
+    "kind": "Retailer-reported MSRP",
+    "url": "https://seller.tcgplayer.com/blog/pitch-black-quick-facts",
+    "verified_at": "2026-10-04",
+    "notes": "Standard 9-pack ETB only. Pokemon Center ETB is a different product."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG Mega Evolution Pitch Black Build & Battle",
+      "Pokemon TCG Mega Evolution Pitch Black Build & Battle Box",
+      "Pokemon Mega Evolution Pitch Black Build & Battle Box",
+      "Pokemon Pitch Black Build & Battle Box",
+      "Pokemon TCG Pitch Black Build & Battle Box"
+    ],
+    "cents": 2199,
+    "kind": "Retailer-reported MSRP",
+    "url": "https://seller.tcgplayer.com/blog/pitch-black-quick-facts",
+    "verified_at": "2026-10-04",
+    "notes": "One Build & Battle box, not a display or case."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG 30th Celebration Elite Trainer Box",
+      "Pokemon 30th Celebration Elite Trainer Box",
+      "Pokemon Trading Card Game 30th Celebration Elite Trainer Box",
+      "Pokemon TCG 30th Celebration Elite Trainer Box ETB"
+    ],
+    "cents": 4999,
+    "kind": "Distributor-reported MSRP",
+    "url": "https://www.phdgames.com/2026/07/10/pokemon-tcg-30th-celebration/",
+    "verified_at": "2026-10-04",
+    "notes": "PHD Games explicitly lists case MSRP $499.90 for 10 boxes. Per-box reference = case price / units. Exact single-box aliases only."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG 30th Celebration Booster Bundle",
+      "Pokemon 30th Celebration Booster Bundle",
+      "Pokemon Trading Card Game 30th Celebration Booster Bundle"
+    ],
+    "cents": 2694,
+    "kind": "Distributor-reported MSRP",
+    "url": "https://www.phdgames.com/2026/07/10/pokemon-tcg-30th-celebration/",
+    "verified_at": "2026-10-04",
+    "notes": "PHD Games explicitly lists case MSRP $673.50 for 25 boxes. Per-box reference = case price / units. Exact single-box aliases only."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG 30th Celebration Tech Sticker Collection",
+      "Pokemon 30th Celebration Tech Sticker Collection",
+      "Pokemon Trading Card Game 30th Celebration Tech Sticker Collection"
+    ],
+    "cents": 1499,
+    "kind": "Distributor-reported MSRP",
+    "url": "https://www.phdgames.com/2026/07/10/pokemon-tcg-30th-celebration/",
+    "verified_at": "2026-10-04",
+    "notes": "PHD Games explicitly lists case MSRP $179.88 for 12 boxes. Per-box reference = case price / units. Exact single-box aliases only."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG 30th Celebration Knock Out Collection",
+      "Pokemon 30th Celebration Knock Out Collection",
+      "Pokemon Trading Card Game 30th Celebration Knock Out Collection",
+      "Pokemon TCG 30th Celebration Knockout Collection"
+    ],
+    "cents": 999,
+    "kind": "Distributor-reported MSRP",
+    "url": "https://www.phdgames.com/2026/07/10/pokemon-tcg-30th-celebration/",
+    "verified_at": "2026-10-04",
+    "notes": "PHD Games explicitly lists case MSRP $239.76 for 24 boxes. Per-box reference = case price / units. Exact single-box aliases only."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG 30th Celebration Binder Collection",
+      "Pokemon 30th Celebration Binder Collection",
+      "Pokemon Trading Card Game 30th Celebration Binder Collection"
+    ],
+    "cents": 3199,
+    "kind": "Distributor-reported MSRP",
+    "url": "https://www.phdgames.com/2026/07/10/pokemon-tcg-30th-celebration/",
+    "verified_at": "2026-10-04",
+    "notes": "PHD Games explicitly lists case MSRP $191.94 for 6 boxes. Per-box reference = case price / units. Exact single-box aliases only."
+  },
+  {
+    "exact_titles": [
+      "Pokemon TCG 30th Celebration Ditto Premium Collection",
+      "Pokemon 30th Celebration Ditto Premium Collection",
+      "Pokemon Trading Card Game 30th Celebration Ditto Premium Collection"
+    ],
+    "cents": 3999,
+    "kind": "Distributor-reported MSRP",
+    "url": "https://www.phdgames.com/2026/07/10/pokemon-tcg-30th-celebration/",
+    "verified_at": "2026-10-04",
+    "notes": "PHD Games explicitly lists case MSRP $239.94 for 6 boxes. Per-box reference = case price / units. Exact single-box aliases only."
+  }
+]
