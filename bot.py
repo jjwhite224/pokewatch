@@ -665,7 +665,7 @@ def make_handler(tracker):
             if path == "/api/state":
                 return self.send(200, tracker.snapshot())
             files = {"/": ("index.html", "text/html; charset=utf-8"), "/app.js": ("app.js", "text/javascript; charset=utf-8"), "/hosting.js": ("hosting.js", "text/javascript; charset=utf-8"), "/style.css": ("style.css", "text/css; charset=utf-8"), "/favicon.svg": ("favicon.svg", "image/svg+xml")}
-            files.update({f"/{name}": (name, "text/javascript; charset=utf-8") for name in ("nearby.js", "nearby-provider.js")})
+            files.update({f"/{name}": (name, "text/javascript; charset=utf-8") for name in ("community.js", "nearby.js", "nearby-provider.js")})
             if path in files:
                 filename, mime = files[path]
                 return self.send(200, (ROOT / "static" / filename).read_bytes(), mime)

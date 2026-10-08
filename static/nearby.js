@@ -111,6 +111,12 @@
       card.append(element('span', 'Product inventory not checked', 'badge'));
       const link = publicLink('Store details', store.url);
       if (link) { const paragraph = element('p'); paragraph.append(link); card.append(paragraph); }
+      const community = window.PokeWatchCommunity?.retailerLink(store.chain);
+      if (community) {
+        const paragraph = element('p');
+        paragraph.append(publicLink(`Browse ${community.name} community sightings ↗`, community.url));
+        card.append(paragraph, element('p', 'Retailer-wide reports on Restockd; search for this branch there.'));
+      }
       results.append(card);
     }
     status.textContent = visibleStores.length

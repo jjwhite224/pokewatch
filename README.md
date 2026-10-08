@@ -86,6 +86,14 @@ Shopify feeds are paginated with an explicit configured cap. A partial status me
 
 All saved stock is treated as stale on restart until rechecked. Data also expires after two polling intervals. The first edition is US/USD and filters out explicitly labeled foreign-language catalog products.
 
+## Community sightings
+
+**Community sightings** opens actual collector reports at their source. Restockd's public [in-store map](https://restockd.app/pokemon-in-store) shows product, store, report age, and subsequent stock updates, with a 60-minute delay. Verified retailer filters cover Target, Walmart, Best Buy, CVS, Dollar General, and Costco. Nearby-store cards link to the corresponding **retailer-wide** reports; users must search the exact branch on Restockd. PokéWatch's 10/15/20-mile radius does not apply to these external links.
+
+The panel also links to [Poke It Forward](https://www.pokeitforward.com/), whose coverage varies and whose reports become stale after 24 hours, and [CCN's member app](https://app.crepchiefnotify.com/), which requires sign-in. These links do not import reports, confirm availability or MSRP, affect source-health counts, or generate automatic alerts. No community site is contacted until a link is opened, and no device coordinates are included in those links.
+
+Access was checked October 8, 2026. Both public maps reject framing inside another website. CCN exposes no public sightings feed found during this investigation, and [Restockd's terms](https://restockd.app/terms) restrict copying and mirroring its data. Automated report import would require a supported feed and permission from its provider. PokéWatch does not scrape member-only reports or publish an imitation live feed.
+
 ## Files and privacy
 
 - `bot.py`: public-source readers, matching, saved state, local server.

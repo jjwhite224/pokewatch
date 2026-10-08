@@ -5,7 +5,7 @@
   <title>PokéWatch · Pokémon at retail</title>
   <meta name="description" content="Pokémon TCG release and retail-price tracker.">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
-  <script src="./hosting.js" defer></script><script src="./nearby.js" defer></script><script src="./nearby-provider.js" defer></script><script src="./app.js" defer></script>
+  <script src="./hosting.js" defer></script><script src="./community.js" defer></script><script src="./nearby.js" defer></script><script src="./nearby-provider.js" defer></script><script src="./app.js" defer></script>
 </head>
 <body>
   <header class="topbar"><a class="brand" href="./"><img src="./favicon.svg" width="30" height="30" alt="">PokéWatch<span>US EDITION</span></a><span id="tracker-mode" class="local">LOCAL TRACKER</span></header>
@@ -24,6 +24,17 @@
       <div id="nearby-results" class="nearby-results"></div>
       <p id="nearby-source" class="small" hidden></p>
       <p id="nearby-privacy" class="nearby-privacy">Your precise location stays in this tab's memory and is never published to GitHub. Reloading or forgetting clears it.</p>
+    </section>
+    <section id="community-panel" class="community-panel" aria-labelledby="community-title">
+      <div class="community-heading"><div><p class="eyebrow">FROM OTHER COLLECTORS</p><h2 id="community-title">Community sightings</h2></div><span class="badge">Opens at the source</span></div>
+      <p class="small">See products people found on store shelves, with the store, report age, and later sold-out updates. These are community reports, not retailer-confirmed inventory or verified MSRP.</p>
+      <div class="community-feature">
+        <div><h3>Restockd public sightings</h3><p class="small">The public map runs 60 minutes behind its app. Search your city, store, or ZIP there and check the exact branch and report time before traveling.</p></div>
+        <div class="community-actions"><label for="community-retailer">Retailer<select id="community-retailer"><option value="">All retailers</option><option value="target">Target</option><option value="walmart">Walmart</option><option value="bestbuy">Best Buy</option><option value="cvs">CVS</option><option value="dollargeneral">Dollar General</option><option value="costco">Costco</option></select></label><a id="community-open" class="community-button" href="https://restockd.app/pokemon-in-store" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Open public sightings ↗</a></div>
+      </div>
+      <p class="small community-scope">Retailer filters cover all locations. PokéWatch's 10–20 mile radius does not carry over. Reports are not imported, counted as stock matches, or used for automatic alerts.</p>
+      <details class="community-more"><summary>More community sources</summary><div class="community-alternatives"><article><h3>Poke It Forward</h3><p class="small">Free public store map and report history. Coverage varies; reports older than 24 hours are stale.</p><a href="https://www.pokeitforward.com/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Browse its community map ↗</a></article><article><h3>Crep Chief Notify (CCN)</h3><p class="small">CCN's sightings are inside its member app. Sign-in is required; no CCN report feed is connected to PokéWatch.</p><a href="https://app.crepchiefnotify.com/" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">Open CCN ↗</a></article></div></details>
+      <p class="nearby-privacy">Community sites load only when you open a link. PokéWatch does not send them your device location.</p>
     </section>
     <details class="retailer-directory">
       <summary>Check stock with retailers</summary>

@@ -21,7 +21,7 @@ class Element {
   addEventListener(name, handler) { this.listeners[name] = handler; }
 }
 
-function nearby({supported = true} = {}) {
+function nearby({supported = true, community = false} = {}) {
   const nodes = new Map(), requests = [], window = {};
   for (const match of html.matchAll(/<([a-z]+)\b[^>]*\bid="(nearby-[^"]+)"[^>]*>/g)) {
     const el = new Element(match[1]); el.hidden = /\bhidden\b/.test(match[0]);
@@ -37,6 +37,7 @@ function nearby({supported = true} = {}) {
     localStorage: storage, sessionStorage: storage,
     fetch() { throw new Error('The nearby UI must leave network access to its provider'); },
   });
+  if (community) vm.runInContext(fs.readFileSync(path.join(root, 'static', 'community.js'), 'utf8'), context);
   vm.runInContext(script, context);
   return {
     window, requests, get: id => nodes.get('nearby-' + id),
@@ -219,4 +220,21 @@ test('Only the provider error publicMessage is shown, never internal error detai
   exposePublicMessage = false; await app.radius('15');
   assert.match(app.get('status').textContent, /directory could not be reached/);
   assert.doesNotMatch(app.get('status').textContent, /sensitive parameters/);
+});
+
+test('Nearby community links select only a retailer, never imply a branch match or transmit location', async () => {
+  const app = nearby({community: true});
+  app.setProvider({search: () => response([store('dg', 40.01, 'dollargeneral'), store('shop', 40.02, 'cardshop')])});
+  app.click(); await app.locate();
+  const [dg, shop] = app.cards();
+  const anchors = dg.children.flatMap(child => child.children).filter(child => child.tagName === 'a');
+  const report = anchors.find(a => a.href.startsWith('https://restockd.app/'));
+  assert.equal(report.href, 'https://restockd.app/pokemon-in-store?retailer=dollar-general');
+  assert.equal(report.rel, 'noopener noreferrer');
+  assert.equal(report.referrerPolicy, 'no-referrer');
+  assert.equal(report.target, '_blank');
+  assert.match(dg.textContent, /Retailer-wide reports/);
+  assert.match(dg.textContent, /Product inventory not checked/);
+  assert.doesNotMatch(shop.textContent, /community sightings/);
+  app.forget(); assert.equal(app.cards().length, 0);
 });

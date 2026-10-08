@@ -19,7 +19,7 @@ PRODUCT_FIELDS = (
 SOURCE_FIELDS = ("name", "url", "status", "checked_at", "count", "message", "coverage")
 RELEASE_FIELDS = ("id", "title", "url", "first_seen")
 ALERT_FIELDS = ("id", "kind", "at", "title", "store", "url", "price_cents", "reference_cents", "reference_kind")
-ASSETS = ("index.html", "app.js", "nearby.js", "nearby-provider.js", "style.css", "favicon.svg")
+ASSETS = ("index.html", "app.js", "community.js", "nearby.js", "nearby-provider.js", "style.css", "favicon.svg")
 OUTPUT_FILES = set(ASSETS) | {"hosting.js", "state.json", ".nojekyll"}
 
 
