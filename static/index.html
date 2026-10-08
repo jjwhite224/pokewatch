@@ -5,7 +5,7 @@
   <title>PokéWatch · Pokémon at retail</title>
   <meta name="description" content="Pokémon TCG release and retail-price tracker.">
   <link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
-  <script src="./hosting.js" defer></script><script src="./app.js" defer></script>
+  <script src="./hosting.js" defer></script><script src="./nearby.js" defer></script><script src="./nearby-provider.js" defer></script><script src="./app.js" defer></script>
 </head>
 <body>
   <header class="topbar"><a class="brand" href="./"><img src="./favicon.svg" width="30" height="30" alt="">PokéWatch<span>US EDITION</span></a><span id="tracker-mode" class="local">LOCAL TRACKER</span></header>
@@ -18,6 +18,26 @@
       <div><span class="stat-label">Sources online</span><strong id="sources-count">—</strong><span id="last-check">Waiting for the first check</span></div>
     </div>
     <p id="hosting-note" class="note" hidden></p>
+    <section id="nearby-panel" class="nearby-panel" aria-labelledby="nearby-title">
+      <div class="nearby-heading"><div><h2 id="nearby-title">Stores near you</h2><p class="small">Find nearby retailers and card shops. Store locations do not confirm Pokémon stock.</p></div><div class="nearby-controls"><label for="nearby-radius">Within<select id="nearby-radius"><option value="10">10 miles</option><option value="15">15 miles</option><option value="20" selected>20 miles</option></select></label><label for="nearby-chain">Retailer<select id="nearby-chain" disabled><option value="">All stores</option></select></label><button id="nearby-locate" class="secondary" type="button">Use my location</button><button id="nearby-forget" class="text-button" type="button" hidden>Forget location</button></div></div>
+      <p id="nearby-status" class="small" role="status" aria-live="polite">Choose your location to find nearby stores. Check product inventory on the retailer's website or app.</p>
+      <div id="nearby-results" class="nearby-results"></div>
+      <p id="nearby-source" class="small" hidden></p>
+      <p id="nearby-privacy" class="nearby-privacy">Your precise location stays in this tab's memory and is never published to GitHub. Reloading or forgetting clears it.</p>
+    </section>
+    <details class="retailer-directory">
+      <summary>Check stock with retailers</summary>
+      <p class="small">These are manual product and stock checks. Select your store on the retailer's website or app; the nearby directory does not verify local inventory.</p>
+      <div class="retailer-grid">
+        <article class="retailer-card"><h3>Target</h3><p>Select your store on a product page to check pickup availability.</p><div class="retailer-links"><a href="https://www.target.com/s/pokemon+trading+card+game" target="_blank" rel="noopener noreferrer">Find Pokémon products</a><a href="https://www.target.com/store-locator" target="_blank" rel="noopener noreferrer">Find a store</a></div></article>
+        <article class="retailer-card"><h3>Walmart</h3><p>Set your store, then check the product's pickup options and seller.</p><div class="retailer-links"><a href="https://www.walmart.com/cp/trading-cards/9807313" target="_blank" rel="noopener noreferrer">Find trading cards</a><a href="https://www.walmart.com/store-finder" target="_blank" rel="noopener noreferrer">Find a store</a></div></article>
+        <article class="retailer-card"><h3>Best Buy</h3><p>Choose your store on the product page to check pickup availability.</p><div class="retailer-links"><a href="https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-bundle/6678359" target="_blank" rel="noopener noreferrer">Open tracked product</a><a href="https://stores.bestbuy.com/" target="_blank" rel="noopener noreferrer">Find a store</a></div></article>
+        <article class="retailer-card"><h3>GameStop</h3><p>Choose a store on the product page to check its pickup stock.</p><div class="retailer-links"><a href="https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-pitch-black-booster-bundle/445745.html" target="_blank" rel="noopener noreferrer">Open tracked product</a></div></article>
+        <article class="retailer-card"><h3>CVS</h3><p>Select a CVS store and check pickup if it is offered for the product.</p><div class="retailer-links"><a href="https://www.cvs.com/shop/brand-shop/p/pokemon" target="_blank" rel="noopener noreferrer">Find Pokémon products</a><a href="https://www.cvs.com/shop/find-store" target="_blank" rel="noopener noreferrer">Find a store</a></div></article>
+        <article class="retailer-card"><h3>Dollar General</h3><p>Select a Dollar General store and check pickup if it is offered for the product.</p><div class="retailer-links"><a href="https://www.dollargeneral.com/c/toys/pokemon" target="_blank" rel="noopener noreferrer">Find Pokémon products</a><a href="https://www.dollargeneral.com/store-locator" target="_blank" rel="noopener noreferrer">Find a store</a></div></article>
+        <article class="retailer-card"><h3>Costco</h3><p>Use the Costco app's warehouse inventory check and select your warehouse. Online stock does not confirm warehouse stock.</p><div class="retailer-links"><a href="https://customerservice.costco.com/app/answers/answer_view/a_id/1015066/~/how-do-i-check-warehouse-inventory-and-prices%253F" target="_blank" rel="noopener noreferrer">How to check warehouse stock</a></div></article>
+      </div>
+    </details>
     <div class="workspace">
       <section class="listings">
         <div class="section-top"><h2>The watchlist</h2><span id="schedule">Checks every 15 minutes</span></div>

@@ -177,6 +177,33 @@ class StateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.tracker.set_reference({"product_id": "test:1", "price": "NaN", "kind": "Manufacturer MSRP", "url": "https://example.com"})
 
+    def test_manual_sources_do_not_fetch_or_claim_inventory(self):
+        self.tracker.fetcher = lambda _: self.fail("Manual sources must not make a request")
+        self.tracker.run_source({"id": "cvs", "kind": "manual", "name": "CVS", "url": "https://www.cvs.com", "message": "Check pickup on a product page."})
+        source = self.tracker.state["sources"]["cvs"]
+        self.assertEqual(source["status"], "manual")
+        self.assertIsNone(source["checked_at"])
+        self.assertEqual(source["count"], 0)
+
+    def test_bestbuy_without_key_keeps_product_watch(self):
+        source = {"id": "bestbuy", "kind": "bestbuy", "name": "Best Buy", "url": "https://www.bestbuy.com/product/test/123", "product_id": "bestbuy:123", "seller": "Best Buy"}
+        self.tracker.fetcher = lambda _: product_html({"@type": "Offer", "price": "26.94", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "seller": {"name": "Best Buy"}})
+        with patch.dict("os.environ", {"BESTBUY_API_KEY": ""}), patch("bot.fetch_bestbuy_catalog") as api:
+            self.tracker.run_source(source)
+            api.assert_not_called()
+        self.assertEqual(self.tracker.state["sources"]["bestbuy"]["coverage"], "One specific product")
+        self.assertEqual(self.tracker.state["sources"]["bestbuy"]["count"], 1)
+
+    def test_bestbuy_key_uses_catalog_and_keeps_unverified_sellers_out_of_alerts(self):
+        source = {"id": "bestbuy", "kind": "bestbuy", "name": "Best Buy", "url": "https://www.bestbuy.com/product/test/123"}
+        self.tracker.fetcher = lambda _: self.fail("API mode must not fetch the fallback page")
+        row = product(id="bestbuy:123", source_id="bestbuy", seller_verified=False)
+        with patch.dict("os.environ", {"BESTBUY_API_KEY": "fixture-key"}), patch("bot.fetch_bestbuy_catalog", return_value=([row], False, "Seller not confirmed")):
+            self.tracker.run_source(source)
+        self.assertEqual(self.tracker.state["sources"]["bestbuy"]["count"], 1)
+        self.assertEqual(self.tracker.state["alerts"], [])
+        self.assertNotIn("fixture-key", json.dumps(self.tracker.snapshot()))
+
 
 if __name__ == "__main__":
     unittest.main()

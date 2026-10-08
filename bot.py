@@ -25,6 +25,9 @@ from html.parser import HTMLParser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from retailer_api import fetch_bestbuy_catalog
+from retailer_catalog import dollar_general_products
+
 ROOT = Path(__file__).resolve().parent
 LOG = logging.getLogger("pokewatch")
 USER_AGENT = "PokeWatch/1.0 (personal release and retail-price monitor)"
@@ -436,14 +439,30 @@ class Tracker:
     def run_source(self, source):
         stamp, count, errors = now(), 0, []
         sid = source["id"]
+        api_catalog = source["kind"] == "bestbuy" and bool(os.environ.get("BESTBUY_API_KEY", "").strip())
         with self.lock:
             # Older rows remain visible, but never count as current matches.
             for item in self.state["products"].values():
                 if item["source_id"] == sid:
                     item["stale"] = True
+            if source["kind"] == "manual":
+                self.state["sources"][sid] = {"name": source["name"], "url": source["url"],
+                    "status": "manual", "checked_at": None, "count": 0,
+                    "message": source["message"], "coverage": "Manual stock check"}
+                return
         try:
-            body = self.fetcher(source["url"])
-            if source["kind"] == "releases":
+            if api_catalog:
+                items, partial, message = fetch_bestbuy_catalog(title_filter=sealed_english)
+                for item in items:
+                    self.apply_product(item, stamp)
+                count = len(items)
+                # Keep seller limitations visible even when the catalog response is complete.
+                errors.append(message)
+            else:
+                body = self.fetcher(source["url"])
+            if api_catalog:
+                pass
+            elif source["kind"] == "releases":
                 found = releases(body, source["url"])
                 with self.lock:
                     initial = not self.state["releases"]
@@ -501,6 +520,12 @@ class Tracker:
                         errors.append(f"Checked the newest {max_pages} catalog pages; older pages are outside this scan.")
                 if not count:
                     raise ValueError("Catalog returned no matching sealed Pokémon products on the scanned pages.")
+            elif source["kind"] == "dollar_general":
+                items = dollar_general_products(body, source, sealed_english)
+                for item in items:
+                    self.apply_product(item, stamp)
+                count = len(items)
+                errors.append("Catalog discovery only. Displayed prices may vary by store; online and local stock are not checked.")
             elif source["kind"] == "walmart":
                 items = walmart_products(body, source)
                 for item in items:
@@ -529,7 +554,7 @@ class Tracker:
                         errors.append(str(exc))
                 if not count:
                     raise ValueError(errors[0] if errors else "No readable product offers.")
-            elif source["kind"] == "watch":
+            elif source["kind"] in ("watch", "bestbuy"):
                 item = product_page(body, source["url"], sid, source["name"], source["product_id"])
                 # Marketplace offers require an explicitly recorded seller.
                 host = urllib.parse.urlsplit(source["url"]).hostname or ""
@@ -538,6 +563,8 @@ class Tracker:
                         raise ValueError("Marketplace seller was absent or did not match the seller specified for this watch.")
                 self.apply_product(item, stamp)
                 count = 1
+                if source["kind"] == "bestbuy":
+                    errors.append("One product watch. Add a Best Buy developer key to enable broader catalog discovery; local inventory is not checked.")
             else:
                 raise ValueError("Unsupported source type.")
             status = {"name": source["name"], "url": source["url"], "status": "partial" if errors else "ok", "checked_at": stamp, "count": count, "message": f"{len(errors)} issue(s): {errors[0]}" if errors else "Check completed"}
@@ -546,7 +573,7 @@ class Tracker:
             status = {"name": source["name"], "url": source["url"], "status": "error", "checked_at": stamp, "count": count, "message": str(exc)}
         with self.lock:
             status["url"] = source.get("display_url", status["url"])
-            status["coverage"] = "One specific product" if source["kind"] == "watch" else "Catalog scan"
+            status["coverage"] = "One specific product" if source["kind"] == "watch" or (source["kind"] == "bestbuy" and not api_catalog) else "Catalog scan"
             self.state["sources"][sid] = status
 
     def scan(self):
@@ -624,7 +651,7 @@ def make_handler(tracker):
             self.send_header("Content-Length", str(len(body)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
-            self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+            self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' https: data:; script-src 'self'; style-src 'self'; connect-src 'self' https://overpass-api.de; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
             self.end_headers()
             self.wfile.write(body)
 
@@ -638,6 +665,7 @@ def make_handler(tracker):
             if path == "/api/state":
                 return self.send(200, tracker.snapshot())
             files = {"/": ("index.html", "text/html; charset=utf-8"), "/app.js": ("app.js", "text/javascript; charset=utf-8"), "/hosting.js": ("hosting.js", "text/javascript; charset=utf-8"), "/style.css": ("style.css", "text/css; charset=utf-8"), "/favicon.svg": ("favicon.svg", "image/svg+xml")}
+            files.update({f"/{name}": (name, "text/javascript; charset=utf-8") for name in ("nearby.js", "nearby-provider.js")})
             if path in files:
                 filename, mime = files[path]
                 return self.send(200, (ROOT / "static" / filename).read_bytes(), mime)

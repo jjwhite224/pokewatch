@@ -235,6 +235,8 @@ class SiteOutputTests(unittest.TestCase):
             self.assertGreaterEqual(len(document.links), 5)
             for href in document.links:
                 with self.subTest(href=href):
+                    if urlsplit(href).scheme == "https":
+                        continue  # Retailer handoff links are external; assets stay project-relative.
                     resolved = urlsplit(urljoin(base, href))
                     self.assertEqual(resolved.netloc, "jjwhite224.github.io")
                     self.assertTrue(resolved.path.startswith("/pokewatch/"), resolved.path)

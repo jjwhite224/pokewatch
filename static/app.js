@@ -26,10 +26,11 @@ function productCard(item){
   const body=node('div'), store=node('div',{class:'store-line'});store.append(node('span',{},item.store));
   const stocked=['InStock','PreOrder','PreSale','LimitedAvailability'].includes(item.availability);
   const status=item.stale?'Needs recheck':item.availability==='OutOfStock'?'Sold out':item.availability==='InStoreOnly'?'In-store only':item.availability==='InStock'?'In stock':['PreOrder','PreSale'].includes(item.availability)?'Preorder':item.availability==='LimitedAvailability'?'Limited stock':'Stock unknown';
-  store.append(badge(status,item.stale?'warn':stocked?'good':''));if(item.seller_verified===false)store.append(badge('Marketplace','warn'));body.append(store);
+  store.append(badge(status,item.stale?'warn':stocked?'good':''));if(item.seller_verified===false)store.append(badge(item.seller==='Seller not confirmed by API'?'Seller unverified':'Marketplace','warn'));body.append(store);
   const title=node('h3');title.append(link(item.title,item.url));body.append(title);
   const details=node('div',{class:'product-detail'});
   if(item.reference_cents){details.append(link(item.reference_kind,item.reference_url));}else{details.append(node('span',{},'No verified price reference yet'));}
+  if(item.source_id==='dollargeneral')details.append(node('div',{},'Catalog price · confirm price and stock with your selected store'));
   details.append(node('span',{},` · Checked ${ago(item.checked_at)}`));if(item.seller)details.append(node('div',{},`Seller: ${item.seller}${item.seller_verified===false?' · excluded from automatic alerts':''}`));body.append(details);card.append(body);
   const prices=node('div',{class:'price-block'});prices.append(node('span',{class:`price ${item.qualifies?'match':''}`},item.currency==='USD'?money(item.price_cents):'Price unknown'));
   prices.append(node('span',{class:'price-ref'},item.reference_cents?`Reference ${money(item.reference_cents)}`:'Reference needed'));
@@ -48,8 +49,8 @@ function renderResults(){
   $('#more').hidden=items.length<=limit;
 }
 function render(){
-  const products=currentProducts(),sources=Object.values(state.sources);
-  $('#matches').textContent=products.filter(p=>p.qualifies).length;$('#products-count').textContent=products.length;$('#sources-count').textContent=`${sources.filter(s=>s.status!=='error'&&fresh(s.checked_at)).length} / ${sources.length}`;
+  const products=currentProducts(),sources=Object.values(state.sources),automatic=sources.filter(s=>s.status!=='manual');
+  $('#matches').textContent=products.filter(p=>p.qualifies).length;$('#products-count').textContent=products.length;$('#sources-count').textContent=`${automatic.filter(s=>s.status!=='error'&&fresh(s.checked_at)).length} / ${automatic.length}`;
   $('#last-check').textContent=state.last_scan?`Last store check ${ago(state.last_scan)}`:hosted?'No store check recorded':'First check is running';
   $('#check').textContent=hosted?(refreshing?'Refreshing…':'Refresh data'):state.scanning?'Checking…':'Check now';$('#check').disabled=hosted?refreshing:Boolean(state.scanning);
   $('#scan-state').textContent=hosted?(fresh(state.generated_at)?'Published':'Data is stale'):state.scanning?'Checking':'Monitoring';
@@ -57,7 +58,7 @@ function render(){
   if(hosted){$('#hosting-note').textContent=`Hosted, read-only dashboard · Published ${ago(state.generated_at)}${state.generated_at?` (${new Date(state.generated_at).toLocaleString()})`:''} · Page refreshed ${ago(refreshedAt)}. Scheduled checks can be delayed. Listings older than ${intervalSeconds()/30} minutes are excluded from available stock and price matches.`;}
   const selected=$('#store').value;$('#store').replaceChildren(node('option',{value:''},'All stores'));[...new Set(products.map(p=>p.store))].sort().forEach(name=>$('#store').append(node('option',{value:name},name)));$('#store').value=selected;
   $('#sources').replaceChildren();if(!sources.length)$('#sources').append(node('p',{class:'small'},'Contacting Pokémon and retailer catalogs…'));
-  for(const source of sources){const row=node('div',{class:'source'}),title=node('div',{class:'source-name'});const sourcePage=source.url.includes('/products.json')?source.url.split('/products.json')[0]:source.url;const stale=!fresh(source.checked_at),status=source.status==='error'?'Unavailable':stale?'Needs recheck':source.status==='ok'?'Online':'Partial';title.append(link(source.name,sourcePage),badge(status,source.status==='error'?'bad':stale||source.status==='partial'?'warn':'good'));row.append(title,node('p',{},`${source.coverage==='One specific product'?'One product watch':source.count+' listings'} · ${ago(source.checked_at)}${source.status!=='ok'?` · ${source.message}`:''}`));$('#sources').append(row);}
+  for(const source of sources){const row=node('div',{class:'source'}),title=node('div',{class:'source-name'});const sourcePage=source.url.includes('/products.json')?source.url.split('/products.json')[0]:source.url;const manual=source.status==='manual',stale=!fresh(source.checked_at),status=manual?'Check with retailer':source.status==='error'?'Unavailable':stale?'Needs recheck':source.status==='ok'?'Online':'Partial';title.append(link(source.name,sourcePage),badge(status,source.status==='error'?'bad':manual||stale||source.status==='partial'?'warn':'good'));row.append(title,node('p',{},manual?source.message:`${source.coverage==='One specific product'?'One product watch':source.count+' listings'} · ${ago(source.checked_at)}${source.status!=='ok'?` · ${source.message}`:''}`));$('#sources').append(row);}
   $('#alerts').replaceChildren();if(!state.alerts.length)$('#alerts').append(node('p',{class:'small'},'No alerts yet. New official announcements and qualifying restocks will appear here.'));
   for(const alert of state.alerts.slice(-6).reverse()){const row=node('article',{class:'alert'});row.append(link(alert.title,alert.url),node('span',{},alert.kind==='release'?`New announcement · ${ago(alert.at)}`:`${money(alert.price_cents)} · ${alert.store} · ${ago(alert.at)}`));$('#alerts').append(row);}renderResults();
 }

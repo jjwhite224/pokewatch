@@ -208,11 +208,29 @@ test('Missing, invalid, future, or server-stale check times do not produce avail
 });
 
 test('All local dashboard assets resolve under a GitHub Pages project subpath', () => {
-  const assets = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(match => match[1]);
+  const assets = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(match => match[1]).filter(value => !value.startsWith('https://'));
   assert.ok(assets.length >= 5);
   for (const asset of assets) {
     const resolved = new URL(asset, 'https://example.github.io/pokewatch/');
     assert.ok(resolved.pathname.startsWith('/pokewatch/'), `${asset} escaped the project path`);
     if (asset !== './') assert.ok(fs.existsSync(path.join(staticDir, asset)));
   }
+});
+
+test('Manual retailers are visible without inflating automatic source health', async () => {
+  const data = snapshot();
+  data.sources.cvs = {name: 'CVS', status: 'manual', url: 'https://www.cvs.com', checked_at: null,
+    count: 0, message: 'Select a store to check pickup.'};
+  const app = await dashboard('pages', data);
+  assert.equal(app.get('#sources-count').textContent, '1 / 1');
+  assert.match(app.get('#sources').textContent, /CVSCheck with retailerSelect a store/);
+});
+
+test('Unverified API sellers are not mislabeled as known marketplace sellers', async () => {
+  const data = snapshot();
+  Object.assign(data.products.box, {seller: 'Seller not confirmed by API', seller_verified: false, qualifies: false});
+  const app = await dashboard('pages', data);
+  app.view('all');
+  assert.match(app.cards()[0].textContent, /Seller unverified/);
+  assert.doesNotMatch(app.cards()[0].textContent, /Marketplace/);
 });

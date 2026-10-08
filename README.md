@@ -12,6 +12,22 @@ Moving the site does not repair store readers or guarantee access to blocked sto
 
 The hosted dashboard supports search, filters, links, and alert history. **Refresh data** reloads the published results; it does not trigger a new store scan. Change shared sources and exact price references in `config.json` and `price-catalog.json`. The local app still supports interactive product watches, personal limits, and Windows desktop notifications. Those local settings and notifications do not automatically transfer to Pages.
 
+### Nearby stores and major retailers
+
+Click **Use my location**, allow the browser's location request, then choose **10, 15, or 20 miles** (20 by default). The browser's location estimate depends on your computer's location services; distances are straight-line distances, not driving distances. The directory looks for Target, Walmart, Best Buy, GameStop, CVS, Dollar General, Costco, and mapped games/collectibles/hobby shops. A retailer filter narrows the returned branches. OpenStreetMap is a community-maintained directory: branches can be missing or outdated, and hobby shops may not carry Pokémon.
+
+**A nearby branch is not a stock confirmation.** Every result says product inventory has not been checked. Expand **Check stock with retailers** for direct product/store links and instructions. Select the exact store on the retailer's site or app. CVS and Dollar General may offer pickup for selected products; Costco directs warehouse inventory checks through its app. Its results may lag by 30 minutes and omit sold-out products. [Costco's warehouse instructions](https://customerservice.costco.com/app/answers/answer_view/a_id/1015066/~/how-do-i-check-warehouse-inventory-and-prices%253F).
+
+Your precise coordinates remain in the page's memory. The browser sends coordinates rounded to two decimal places to the [OpenStreetMap Overpass service](https://wiki.openstreetmap.org/wiki/Overpass_API) to find stores; they are not sent to this project's Python checker, saved in tracker state, or published to GitHub. **Forget location** cancels work and clears location/results. Reloading also clears them. Requests happen only after your action, with a one-minute cooldown and an in-memory directory cache of up to one hour. Radius/retailer changes reuse cached results. The public directory can be busy or unavailable; errors leave retailer links available and never imply sold-out inventory. This free service is intended for small personal use; a larger deployment should use its own or a paid directory service.
+
+### Optional Best Buy catalog connection
+
+Best Buy documents an **API**, a supported interface for software to request data, that requires a developer key. An optional adapter is included for broader catalog discovery (up to 200 entries per scan). Without a key, the existing single-product watch remains active. Authenticated live access has not been verified without an owner's key.
+
+To enable the adapter, obtain a key from [Best Buy's developer site](https://developer.bestbuy.com/) and add it in this repository's **Settings → Secrets and variables → Actions → New repository secret**, named `BESTBUY_API_KEY`. The workflow passes it only to the Python checker. For local use, supply it through the process environment. Never put a key in source files, `config.json`, dashboard JavaScript, or a chat message.
+
+The adapter uses the current sale price and explicit online availability; it does not interpret an in-store flag as local inventory or a regular price as MSRP. The documented catalog fields do not establish a direct Best Buy seller, so API-only listings remain **Seller unverified** and cannot trigger price alerts. Nearby product inventory still requires the retailer's store selection. See the [official API documentation](https://bestbuyapis.github.io/api-documentation/).
+
 To deploy:
 
 1. Create or open `jjwhite224/pokewatch` on GitHub. Put only this application's source files at the repository root. Use `main` as the default branch for the included workflow.
@@ -49,18 +65,20 @@ Prices exclude shipping and tax. A stock indicator is the retailer's public onli
 
 ## Source coverage and failures
 
-Configured on October 4, 2026:
+Coverage updated on October 8, 2026:
 
 - **Smoke & Mirrors Hobby:** public Pokémon catalog, up to four 250-product pages.
 - **Game Nerdz:** its storefront's public Storepass catalog, up to three 100-product pages, Pokémon query, newest first. Uses the explicit `msrp` field. Retail selling price is separate from the store's buyback offer.
 - **Zulu's Games:** Pokémon collection, up to two pages.
 - **Josh's Cards:** Pokémon catalog, up to four pages; individual cards and non-card merchandise are filtered out.
 - **Walmart:** featured trading-card catalog. Sellers are displayed. Automatic price alerts require Walmart or Walmart.com as seller; third-party offers remain visible for comparison.
-- **Best Buy:** one seeded Pitch Black Booster Bundle product watch (SKU 6678359), requiring Best Buy as seller. This is not whole-store coverage. In-store-only items do not generate online-stock alerts.
+- **Best Buy:** one seeded Pitch Black Booster Bundle product watch (SKU 6678359), requiring Best Buy as seller, or optional catalog discovery when `BESTBUY_API_KEY` is configured. This is not whole-store coverage. In-store-only items do not generate online-stock alerts.
+- **Dollar General:** public Pokémon catalog discovery. Catalog display prices can differ by selected store; online and local inventory remain unknown. Toys and non-card merchandise are filtered out.
+- **CVS and Costco:** manual product/store checks, displayed separately in source health and excluded from the automatic-source count. CVS blocked the automated catalog probe; Costco's website does not provide a supported public nearby warehouse stock feed for this tracker.
 - **Target, GameStop, and Pokémon Center:** attempted public-page readers. Live checks encountered browser-only data, blocking, or connection issues. They are not reliable live inventory sources until a successful read is reported.
 - **Pokémon official announcements:** initially imported 56 product pages; later checks intermittently returned a bot challenge. Saved announcements are retained and source failures are visible.
 
-Major-store automatic discovery is limited; these connections are not a claim of complete US retailer coverage. Add specific product watches where supported. No accounts, paid feeds, or API keys are required by the sources that work today.
+Major-store automatic discovery is limited; these connections are not a claim of complete US retailer coverage. Add specific product watches where supported. The default connections do not require accounts, paid feeds, or API keys. The optional Best Buy adapter requires a developer key.
 
 `config.json` controls the sources, local port, and interval. Each source appears in **Source health** with its last check and any limitation. The code reads public catalogs and product metadata; it does not solve CAPTCHAs, bypass queues, sign into accounts, or use private credentials. A blocked source or unreadable seller is **unknown**, never “sold out.”
 
@@ -101,7 +119,7 @@ python bot.py --once
 # Run automated checks without contacting stores
 python -m unittest discover -s tests -v
 node --check static/app.js
-node --test tests/frontend.test.cjs
+node --test tests/*.test.cjs
 
 # Stop the managed checker and desktop alerts
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\stop.ps1

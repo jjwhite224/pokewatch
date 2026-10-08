@@ -10,9 +10,12 @@
     {"id": "zulus", "name": "Zulu's Games", "kind": "shopify", "url": "https://zulusgames.com/collections/pokemon-2/products.json?limit=250", "pages": 2},
     {"id": "joshs", "name": "Josh's Cards", "kind": "shopify", "url": "https://joshscards.com/collections/pokemon/products.json?limit=250", "pages": 4},
     {"id": "walmart", "name": "Walmart", "kind": "walmart", "url": "https://www.walmart.com/cp/trading-cards/9807313"},
-    {"id": "bestbuy", "name": "Best Buy", "kind": "watch", "product_id": "bestbuy:6678359", "url": "https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-bundle/6678359", "seller": "Best Buy"},
+    {"id": "bestbuy", "name": "Best Buy", "kind": "bestbuy", "product_id": "bestbuy:6678359", "url": "https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-bundle/6678359", "seller": "Best Buy"},
     {"id": "gamestop", "name": "GameStop", "kind": "watch", "product_id": "gamestop:445745", "url": "https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-pitch-black-booster-bundle/445745.html"},
     {"id": "target", "name": "Target", "kind": "catalog_watch", "url": "https://www.target.com/s/pokemon+trading+card+game", "product_pattern": "/p/", "seller": "Target", "products_per_scan": 8},
-    {"id": "pokemoncenter", "name": "Pokémon Center", "kind": "catalog_watch", "url": "https://www.pokemoncenter.com/category/new-releases", "product_pattern": "/product/", "products_per_scan": 8}
+    {"id": "pokemoncenter", "name": "Pokémon Center", "kind": "catalog_watch", "url": "https://www.pokemoncenter.com/category/new-releases", "product_pattern": "/product/", "products_per_scan": 8},
+    {"id": "cvs", "name": "CVS", "kind": "manual", "url": "https://www.cvs.com/shop/brand-shop/p/pokemon", "message": "Automatic catalog access is blocked. Open a product and select a CVS store to check pickup, where offered."},
+    {"id": "dollargeneral", "name": "Dollar General", "kind": "dollar_general", "url": "https://www.dollargeneral.com/c/toys/pokemon"},
+    {"id": "costco", "name": "Costco", "kind": "manual", "url": "https://customerservice.costco.com/app/answers/answer_view/a_id/1015066/~/how-do-i-check-warehouse-inventory-and-prices%253F", "message": "Check Warehouse in the Costco app. Online stock does not confirm warehouse stock; results may lag and omit sold-out products."}
   ]
 }
