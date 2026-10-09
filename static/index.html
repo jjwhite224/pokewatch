@@ -18,6 +18,16 @@
       <div><span class="stat-label">Sources online</span><strong id="sources-count">—</strong><span id="last-check">Waiting for the first check</span></div>
     </div>
     <p id="hosting-note" class="note" hidden></p>
+    <section class="data-confidence" aria-labelledby="confidence-title">
+      <div class="confidence-heading"><div><p class="eyebrow">DATA YOU CAN VERIFY</p><h2 id="confidence-title">Data confidence</h2></div><span id="confidence-label" class="badge">Waiting for data</span></div>
+      <p id="confidence-description" class="small" role="status" aria-live="polite">We distinguish current retailer signals from missing or expired information.</p>
+      <div class="confidence-metrics">
+        <div><strong id="confidence-fresh">—</strong><span>Fresh product checks</span></div>
+        <div><strong id="confidence-unknown">—</strong><span>Unknown stock</span></div>
+        <div><strong id="confidence-unverified">—</strong><span>Unverified sellers</span></div>
+        <div><strong id="confidence-stale">—</strong><span>Expired product checks</span></div>
+      </div>
+    </section>
     <section id="nearby-panel" class="nearby-panel" aria-labelledby="nearby-title">
       <div class="nearby-heading"><div><h2 id="nearby-title">Stores near you</h2><p class="small">Find nearby retailers and card shops. Store locations do not confirm Pokémon stock.</p></div><div class="nearby-controls"><label for="nearby-radius">Within<select id="nearby-radius"><option value="10">10 miles</option><option value="15">15 miles</option><option value="20" selected>20 miles</option></select></label><label for="nearby-chain">Retailer<select id="nearby-chain" disabled><option value="">All stores</option></select></label><button id="nearby-locate" class="secondary" type="button">Use my location</button><button id="nearby-forget" class="text-button" type="button" hidden>Forget location</button></div></div>
       <p id="nearby-status" class="small" role="status" aria-live="polite">Choose your location to find nearby stores. Check product inventory on the retailer's website or app.</p>
