@@ -39,17 +39,45 @@ function productCard(item){
 function renderResults(){
   if(!state)return;
   const target=$('#results');target.replaceChildren();const query=$('#search').value.toLowerCase();
-  const official=view==='releases';$('#store').disabled=official;$('#stock').disabled=official;
+  const official=view==='releases';$('#store').disabled=official;$('#stock').disabled=official;$('#sort').disabled=official;
   $('#view-note').textContent=official?'Official product announcements. “Discovered” is when this bot first saw a page, not its release date. Open the announcement for launch details.':'Prices are for the product only, before shipping and tax. Availability can change before checkout.';
   let items=official?Object.values(state.releases):currentProducts();
   items=items.filter(p=>searchKey(query).split(/\s+/).every(word=>searchKey(p.title).includes(word)));
-  if(!official){items=items.filter(p=>(!$('#store').value||p.store===$('#store').value)&&(!$('#stock').checked||(!p.stale&&['InStock','PreOrder','PreSale','LimitedAvailability'].includes(p.availability))));if(view==='matches')items=items.filter(p=>p.qualifies);if(view==='unverified')items=items.filter(p=>!p.reference_cents);items.sort((a,b)=>new Date(b.listed_at||b.first_seen)-new Date(a.listed_at||a.first_seen));}else{items.sort((a,b)=>new Date(b.first_seen)-new Date(a.first_seen));}
+  if(!official){items=items.filter(p=>(!$('#store').value||p.store===$('#store').value)&&(!$('#stock').checked||(!p.stale&&['InStock','PreOrder','PreSale','LimitedAvailability'].includes(p.availability))));if(view==='matches')items=items.filter(p=>p.qualifies);if(view==='unverified')items=items.filter(p=>!p.reference_cents);const sorting=$('#sort').value;
+    const when=value=>{const parsed=Date.parse(value);return Number.isFinite(parsed)?parsed:0;};
+    const numericPrice=item=>Number.isInteger(item.price_cents)&&item.price_cents>0?item.price_cents:null;
+    items.sort((a,b)=>{
+      if(sorting==='recently-checked')return when(b.checked_at)-when(a.checked_at)||a.title.localeCompare(b.title);
+      if(sorting==='price-low'||sorting==='price-high'){
+        const pa=numericPrice(a),pb=numericPrice(b);
+        if(pa===null)return pb===null?a.title.localeCompare(b.title):1;
+        if(pb===null)return -1;
+        return (sorting==='price-low'?pa-pb:pb-pa)||a.title.localeCompare(b.title);
+      }
+      return when(b.listed_at||b.first_seen)-when(a.listed_at||a.first_seen)||a.title.localeCompare(b.title);
+    });}else{items.sort((a,b)=>new Date(b.first_seen)-new Date(a.first_seen));}
   if(!items.length){const box=node('div',{class:'empty'});box.append(node('h3',{},!hosted&&state.scanning&&!state.last_scan?'Checking the first listings…':view==='matches'?'No confirmed price matches right now.':'No listings in this view.'));box.append(node('p',{},view==='matches'?`A match needs a recent check, available stock, and a reference for the exact product. ${hosted?'Browse listings or official releases, and check source health for delayed data.':'Browse discovered listings to add a reference, or check the official release feed.'}`:'Try another search or check the source status. Results update automatically.'));if(view==='matches'){const button=node('button',{class:'secondary'},'Browse all listings');button.onclick=()=>selectView('all');box.append(button);}target.append(box);}
   for(const item of items.slice(0,limit)){if(official){const row=node('article',{class:'release'});row.append(link(item.title,item.url),node('p',{},`Pokémon · Official announcement · Discovered ${ago(item.first_seen)}`));target.append(row);}else target.append(productCard(item));}
   $('#more').hidden=items.length<=limit;
 }
 function render(){
   const products=currentProducts(),sources=Object.values(state.sources),automatic=sources.filter(s=>s.status!=='manual');
+  const freshProducts=products.filter(p=>!p.stale);
+  const staleCount=products.length-freshProducts.length;
+  const unknownCount=products.filter(p=>p.availability==='Unknown'||!p.availability).length;
+  const unverifiedCount=products.filter(p=>p.seller_verified===false).length;
+  const scanFresh=fresh(state.last_scan);
+  $('#confidence-fresh').textContent=freshProducts.length;
+  $('#confidence-unknown').textContent=unknownCount;
+  $('#confidence-unverified').textContent=unverifiedCount;
+  $('#confidence-stale').textContent=staleCount;
+  $('#confidence-label').textContent=!state.last_scan?'Awaiting first scan':!scanFresh?'Scan overdue':staleCount?'Mixed freshness':'Recent scan';
+  $('#confidence-label').className='badge '+(!state.last_scan||!scanFresh||staleCount?'warn':'good');
+  $('#confidence-description').textContent=!state.last_scan
+    ?'No scan has been recorded. Listings and store inventory have not been verified.'
+    :!scanFresh
+      ?'The latest scan is outside the freshness window. Old availability and deal claims cannot be treated as current.'
+      :`Last scan ${ago(state.last_scan)}. Fresh product checks show retailer signals, not guaranteed checkout or in-store inventory.`;
   $('#matches').textContent=products.filter(p=>p.qualifies).length;$('#products-count').textContent=products.length;$('#sources-count').textContent=`${automatic.filter(s=>s.status!=='error'&&fresh(s.checked_at)).length} / ${automatic.length}`;
   $('#last-check').textContent=state.last_scan?`Last store check ${ago(state.last_scan)}`:hosted?'No store check recorded':'First check is running';
   $('#check').textContent=hosted?(refreshing?'Refreshing…':'Refresh data'):state.scanning?'Checking…':'Check now';$('#check').disabled=hosted?refreshing:Boolean(state.scanning);
@@ -64,7 +92,7 @@ function render(){
 }
 async function refresh(){if(refreshing)return;refreshing=true;if(hosted){$('#check').disabled=true;$('#check').textContent='Refreshing…';}try{const response=await fetch(stateUrl,{cache:'no-store'});if(!response.ok)throw new Error();const next=await response.json();if(!next.products||!next.sources||!next.releases||!Array.isArray(next.alerts))throw new Error();state=next;refreshedAt=new Date().toISOString();if(refreshError)$('#notice').hidden=true;refreshError=false;}catch{refreshError=true;notice(hosted?'Published data could not be loaded. The page will retry automatically; any saved listings still expire as they age.':'The local bot is not responding. Run Start PokéWatch.cmd to reconnect.');}finally{refreshing=false;if(state)render();else if(hosted){$('#check').disabled=false;$('#check').textContent='Refresh data';}if(refreshError)$('#scan-state').textContent=hosted?'Refresh failed':'Disconnected';}}
 $('.tabs').addEventListener('click',e=>{if(e.target.dataset.view)selectView(e.target.dataset.view);});
-for(const id of ['#search','#store','#stock'])$(id).addEventListener('input',()=>{limit=30;renderResults();});
+for(const id of ['#search','#store','#stock','#sort'])$(id).addEventListener('input',()=>{limit=30;renderResults();});
 $('#more').onclick=()=>{limit+=30;renderResults();};
 $('#check').onclick=async()=>{if(hosted)return refresh();try{await api('./api/scan',{});await refresh();}catch(e){notice(e.message);}};
 $('#add-watch').onclick=()=>{if(hosted)return;$('#watch-form').reset();$('#watch-form .form-error').textContent='';$('#watch-dialog').showModal();};
