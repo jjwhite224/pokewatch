@@ -50,6 +50,22 @@ function renderResults(){
 }
 function render(){
   const products=currentProducts(),sources=Object.values(state.sources),automatic=sources.filter(s=>s.status!=='manual');
+  const freshProducts=products.filter(p=>!p.stale);
+  const staleCount=products.length-freshProducts.length;
+  const unknownCount=products.filter(p=>p.availability==='Unknown'||!p.availability).length;
+  const unverifiedCount=products.filter(p=>p.seller_verified===false).length;
+  const scanFresh=fresh(state.last_scan);
+  $('#confidence-fresh').textContent=freshProducts.length;
+  $('#confidence-unknown').textContent=unknownCount;
+  $('#confidence-unverified').textContent=unverifiedCount;
+  $('#confidence-stale').textContent=staleCount;
+  $('#confidence-label').textContent=!state.last_scan?'Awaiting first scan':!scanFresh?'Scan overdue':staleCount?'Mixed freshness':'Recent scan';
+  $('#confidence-label').className='badge '+(!state.last_scan||!scanFresh||staleCount?'warn':'good');
+  $('#confidence-description').textContent=!state.last_scan
+    ?'No scan has been recorded. Listings and store inventory have not been verified.'
+    :!scanFresh
+      ?'The latest scan is outside the freshness window. Old availability and deal claims cannot be treated as current.'
+      :`Last scan ${ago(state.last_scan)}. Fresh product checks show retailer signals, not guaranteed checkout or in-store inventory.`;
   $('#matches').textContent=products.filter(p=>p.qualifies).length;$('#products-count').textContent=products.length;$('#sources-count').textContent=`${automatic.filter(s=>s.status!=='error'&&fresh(s.checked_at)).length} / ${automatic.length}`;
   $('#last-check').textContent=state.last_scan?`Last store check ${ago(state.last_scan)}`:hosted?'No store check recorded':'First check is running';
   $('#check').textContent=hosted?(refreshing?'Refreshing…':'Refresh data'):state.scanning?'Checking…':'Check now';$('#check').disabled=hosted?refreshing:Boolean(state.scanning);
